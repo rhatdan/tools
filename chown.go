@@ -10,7 +10,6 @@ import (
 )
 
 func Walk(wg *sync.WaitGroup, path string, uid, gid uint32) error {
-	wg.Add(1)
 	defer wg.Done()
 	f, err := os.Open(path)
 	if err != nil {
@@ -37,6 +36,7 @@ func Walk(wg *sync.WaitGroup, path string, uid, gid uint32) error {
 			}
 		}
 		if file.IsDir() {
+			wg.Add(1)
 			go Walk(wg, p, uid, gid)
 		}
 	}
@@ -69,6 +69,7 @@ func main() {
 		os.Exit(1)
 	}
 
+	wg.Add(1)
 	Walk(&wg, os.Args[1], uint32(uid), uint32(gid))
 	wg.Wait()
 }
