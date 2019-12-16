@@ -27,7 +27,8 @@ func Walk(wg *sync.WaitGroup, path string, uid, gid uint32) error {
 		p := filepath.Join(path, file.Name())
 		pUid := file.Sys().(*syscall.Stat_t).Uid
 		pGid := file.Sys().(*syscall.Stat_t).Gid
-		if uid == pUid && gid == pGid {
+		if uid != pUid || gid != pGid {
+			//			fmt.Println(p, uid, gid)
 			err := os.Lchown(p, int(uid), int(gid))
 			if err != nil {
 				fmt.Printf("Error while chowning file %v:%v\n",
